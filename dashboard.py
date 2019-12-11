@@ -545,11 +545,17 @@ inputs3 = column(div3, title3, num_sample3, sample3, reset3, data_table3, output
 inputs4 = column(title4, dropdown4, type_selection4, num_sides, roll4, reset4, data_table4)
 inputs5 = column(title5, dropdown5, reset5)
 tab1 = row(inputs1, plot1, width=int(phi*400))
-
+tab2 = row(inputs2, plot2, width=int(phi*400))
+tab3 = row(inputs3, plot3, plot3_below, width=int(phi*400))
+tab4 = row(inputs4, plot4, width=int(phi*400))
+tab5 = row(inputs5, plot5, width=int(phi*400))
 tab1 = Panel(child=tab1, title="Like a Gauss")
+tab2 = Panel(child=tab2, title="Block Party")
+tab3 = Panel(child=tab3, title="Scatter!")
+tab4 = Panel(child=tab4, title="Roll")
+tab5 = Panel(child=tab5, title="Wheel Party")
+tabs = Tabs(tabs=[tab1, tab2, tab3, tab4, tab5])
 
-tabs = Tabs(tabs=[tab1])
-
-curdoc().title = "CMC Dashboard"
+curdoc().title = "MCC MLC Dashboard"
 curdoc().theme = 'caliber'
 curdoc().add_root(tabs)
