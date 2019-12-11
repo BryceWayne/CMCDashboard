@@ -18,6 +18,7 @@ DEFAULTS
 """
 plt.style.use('default')
 PHI = 1.618
+w = 12*60*60*1000 # half day in ms
 """
 SETUP DATA
 """
@@ -31,8 +32,8 @@ def get_data(market='Bitcoin'):
 	data = dfs[2]
 	data = data.iloc[::-1]
 	data['Date'] = pd.to_datetime(data['Date'])
-	data.set_index(data['Date'], inplace=True)
-	data = data[['Open*', 'High', 'Low', 'Close**', 'Volume', 'Market Cap']]
+	# data.set_index(data['Date'], inplace=True)
+	data = data[['Open*', 'High', 'Low', 'Close**', 'Volume', 'Market Cap', 'Date']]
 	return data
 
 df = get_data()
@@ -41,35 +42,40 @@ source = ColumnDataSource(df)
 """
 SETUP PLOTS
 """
-plot1 = figure(plot_height=600, plot_width=int(PHI*600), title="Bitcoins", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
-plot1.line(x='Date', y='Close**', line_width=2, line_alpha=0.6, source=source)
-
+inc = df['Close**'] > df['Open*']
+dec = df['Open*'] > df['Close**']
+price = figure(plot_height=600, plot_width=int(PHI*600), title="Bitcoin", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
+price.line(x='Date', y='Close**', line_width=1, line_alpha=0.6, source=source)
+price.xaxis.major_label_orientation = np.pi/4
+price.grid.grid_line_alpha=0.3
+price.segment(df['Date'], df['High'], df['Date'], df['Low'], color="black")
+price.vbar(df['Date'][inc], w, df['Open*'][inc], df['Close**'][inc], fill_color="#D5E1DD", line_color="black")
+price.vbar(df['Date'][dec], w, df['Open*'][dec], df['Close**'][dec], fill_color="#F2583E", line_color="black")
 """
 SETUP WIDGETS
 """
-div1 = Div(text="""<p style="border:3px; border-style:solid; border-color:#FF0000; padding: 1em;">
+price_div = Div(text="""<p style="border:3px; border-style:solid; border-color:#FF0000; padding: 1em;">
                     Stuff.</p>""",
                     width=300, height=130)
-title1 = TextInput(title="Plot Title", value='Bitcoin')
+price_title = TextInput(title="Plot Title", value='Bitcoin')
 
 """
 Set up callbacks
 """
 def update_title(attrname, old, new):
-    plot1.title.text = title1.value
+    price.title.text = price_title.value
 
 
-for t in [title1]:
+for t in [price_title]:
     t.on_change('value', update_title)
 
 
 # Set up layouts and add to document
-inputs1 = column(div1, title1)
+inputs1 = column(price_div, price_title)
 
 
-tab1 = row(inputs1, plot1, width=int(PHI*400))
-tab1 = row(plot1, width=int(PHI*400))
-tab1 = Panel(child=tab1, title="Bitcoin")
+tab1 = row(price, width=int(PHI*400))
+tab1 = Panel(child=tab1, title="Price")
 tabs = Tabs(tabs=[tab1])
 
 curdoc().title = "CMC Dashboard"
