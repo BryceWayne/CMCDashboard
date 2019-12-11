@@ -34,12 +34,14 @@ pi = np.pi
 phi = 1.618
 ratio = 0
 mu = 0
-x1 = np.linspace(mu - 6 * sigma, mu + 6 * sigma, N)
-y1 = 1/(sigma*np.sqrt(2*pi))*np.exp(-0.5*((x1-mu)/sigma)**2)
+# x1 = np.linspace(mu - 6 * sigma, mu + 6 * sigma, N)
+x1 = df['Date']
+# y1 = 1/(sigma*np.sqrt(2*pi))*np.exp(-0.5*((x1-mu)/sigma)**2)
+y1 = df['Close**']
 source1 = ColumnDataSource(data=dict(x=x1, y=y1))
-u1 = np.linspace(mu - 6 * sigma, mu + 6 * sigma, N)
-v1 = 1/(sigma*np.sqrt(2*pi))*np.exp(-0.5*((u1-mu)/sigma)**2)
-source1_reference = ColumnDataSource(dict(x=df['Date'], y=df['Close**']))
+# u1 = np.linspace(mu - 6 * sigma, mu + 6 * sigma, N)
+# v1 = 1/(sigma*np.sqrt(2*pi))*np.exp(-0.5*((u1-mu)/sigma)**2)
+# source1_reference = ColumnDataSource(dict(x=df['Date'].tolist(), y=df['Close**'].tolist()))
 
 x2 = np.random.randint(low=1, high=11, size=100)
 unique2, counts2 = np.unique(x2, return_counts=True)
@@ -61,7 +63,7 @@ SETUP PLOTS
 """
 plot1 = figure(plot_height=600, plot_width=int(phi*600), title="Oh my Gauss",
               tools="save", x_range=[x1.min(), x1.max()], y_range=[0, phi*y1.max()])
-plot1.line('x', 'y', source=source1_reference, line_width=3*1/phi, line_alpha=0.6, line_color="gray", line_dash='dashed', legend='Reference')
+# plot1.line('x', 'y', source=source1_reference, line_width=3*1/phi, line_alpha=0.6, line_color="gray", line_dash='dashed', legend='Reference')
 plot1.line('x', 'y', source=source1, line_width=3, legend="Your Gauss")
 
 plot2 = figure(plot_height=700, plot_width=int(phi*700), title="Block Party",
@@ -543,17 +545,11 @@ inputs3 = column(div3, title3, num_sample3, sample3, reset3, data_table3, output
 inputs4 = column(title4, dropdown4, type_selection4, num_sides, roll4, reset4, data_table4)
 inputs5 = column(title5, dropdown5, reset5)
 tab1 = row(inputs1, plot1, width=int(phi*400))
-tab2 = row(inputs2, plot2, width=int(phi*400))
-tab3 = row(inputs3, plot3, plot3_below, width=int(phi*400))
-tab4 = row(inputs4, plot4, width=int(phi*400))
-tab5 = row(inputs5, plot5, width=int(phi*400))
-tab1 = Panel(child=tab1, title="Like a Gauss")
-tab2 = Panel(child=tab2, title="Block Party")
-tab3 = Panel(child=tab3, title="Scatter!")
-tab4 = Panel(child=tab4, title="Roll")
-tab5 = Panel(child=tab5, title="Wheel Party")
-tabs = Tabs(tabs=[tab1, tab2, tab3, tab4, tab5])
 
-curdoc().title = "MCC MLC Dashboard"
+tab1 = Panel(child=tab1, title="Like a Gauss")
+
+tabs = Tabs(tabs=[tab1])
+
+curdoc().title = "CMC Dashboard"
 curdoc().theme = 'caliber'
 curdoc().add_root(tabs)
