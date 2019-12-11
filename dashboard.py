@@ -8,6 +8,7 @@ from bokeh.plotting import figure
 from pprint import pprint
 import datetime
 from sklearn import preprocessing
+
 market = 'Bitcoin'
 z = datetime.datetime.today()
 z.strftime("%x")
@@ -16,11 +17,11 @@ current_day = temp[0]+temp[1]+temp[2].split(" ")[0]
 web = requests.get(f"https://coinmarketcap.com/currencies/{market.lower()}/historical-data/?start=20130428&end=" + current_day)
 
 dfs = pd.read_html(web.text)
-data = dfs[2]
-data = data.iloc[::-1]
-data['Date'] = pd.to_datetime(data['Date'])
-data.set_index(data['Date'], inplace=True)
-data = data[['Open*', 'High', 'Low', 'Close**', 'Volume', 'Market Cap']]
+df = dfs[2]
+df = df.iloc[::-1]
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index(df['Date'], inplace=True)
+# df = df[['Open*', 'High', 'Low', 'Close**', 'Volume', 'Market Cap']]
 
 """
 SETUP DATA
@@ -36,7 +37,7 @@ y1 = 1/(sigma*np.sqrt(2*pi))*np.exp(-0.5*((x1-mu)/sigma)**2)
 source1 = ColumnDataSource(data=dict(x=x1, y=y1))
 u1 = np.linspace(mu - 6 * sigma, mu + 6 * sigma, N)
 v1 = 1/(sigma*np.sqrt(2*pi))*np.exp(-0.5*((u1-mu)/sigma)**2)
-source1_reference = ColumnDataSource(dict(x=data.index, y=data['Close**']))
+source1_reference = ColumnDataSource(dict(x=df['Date'], y=df['Close**']))
 
 x2 = np.random.randint(low=1, high=11, size=100)
 unique2, counts2 = np.unique(x2, return_counts=True)
