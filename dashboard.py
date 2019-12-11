@@ -51,16 +51,6 @@ div1 = Div(text="""<p style="border:3px; border-style:solid; border-color:#FF000
                     width=300, height=130)
 title1 = TextInput(title="Plot Title", value='Oh my Gauss')
 
-"""
-Set up callbacks
-"""
-def update_title(attrname, old, new):
-    plot1.title.text = title1.value
-
-
-for t in [title1]:
-    t.on_change('value', update_title)
-
 
 # Set up layouts and add to document
 inputs1 = column(div1, title1)
