@@ -8,6 +8,8 @@ from bokeh.plotting import figure
 from pprint import pprint
 import datetime
 from sklearn import preprocessing
+import pandas as pd
+import requests
 
 market = 'Bitcoin'
 z = datetime.datetime.today()
