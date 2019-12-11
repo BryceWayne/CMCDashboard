@@ -40,8 +40,8 @@ def get_data(market='Bitcoin'):
 """
 SETUP PLOTS
 """
-plot1 = figure(plot_height=600, plot_width=int(PHI*600), title="Oh my Gauss",
-              tools="save")
+plot1 = figure(plot_height=600, plot_width=int(PHI*600), title="Oh my Gauss")
+plot1.line([1, 3, 5, 7, 9], [0, 2, 4, 6, 8], line_width=2)
 
 """
 SETUP WIDGETS
