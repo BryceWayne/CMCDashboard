@@ -5,25 +5,42 @@ from bokeh.models import ColumnDataSource, Range1d
 from bokeh.models.widgets import Slider, TextInput, Tabs, Panel, Button, DataTable, Div, CheckboxGroup
 from bokeh.models.widgets import NumberFormatter, TableColumn, Dropdown, RadioButtonGroup, Select
 from bokeh.plotting import figure
+from bokeh.models import CustomJS, HoverTool, NumeralTickFormatter
 from pprint import pprint
 import pandas as pd
 import requests
 import matplotlib.pyplot as plt
-plt.style.use('default')
 import datetime
 from sklearn import preprocessing
 
 """
+DEFAULTS
+"""
+plt.style.use('default')
+PHI = 1.618
+"""
 SETUP DATA
 """
-phi = 1.618
 
+
+def get_data(market='Bitcoin'):
+	z = datetime.datetime.today()
+	z.strftime("%x")
+	temp = str(z).split('-')
+	current_day = temp[0]+temp[1]+temp[2].split(" ")[0]
+	web = requests.get(f"https://coinmarketcap.com/currencies/{market.lower()}/historical-data/?start=20130428&end=" + current_day)
+	dfs = pd.read_html(web.text)
+	data = dfs[2]
+	data = data.iloc[::-1]
+	data['Date'] = pd.to_datetime(data['Date'])
+	data.set_index(data['Date'], inplace=True)
+	data = data[['Open*', 'High', 'Low', 'Close**', 'Volume', 'Market Cap']]
 
 
 """
 SETUP PLOTS
 """
-plot1 = figure(plot_height=600, plot_width=int(phi*600), title="Oh my Gauss",
+plot1 = figure(plot_height=600, plot_width=int(PHI*600), title="Oh my Gauss",
               tools="save")
 
 """
@@ -48,7 +65,7 @@ for t in [title1]:
 # Set up layouts and add to document
 inputs1 = column(div1, title1)
 
-tab1 = row(inputs1, plot1, width=int(phi*400))
+tab1 = row(inputs1, plot1, width=int(PHI*400))
 tab1 = Panel(child=tab1, title="Like a Gauss")
 tabs = Tabs(tabs=[tab1])
 
