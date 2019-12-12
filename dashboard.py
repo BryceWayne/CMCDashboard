@@ -22,7 +22,7 @@ w = 12*60*60*1000 # half day in ms
 """
 SETUP DATA
 """
-def get_data(market='Bitcoin'):
+def get_data(market='Verge'):
 	z = datetime.datetime.today()
 	z.strftime("%x")
 	temp = str(z).split('-')
@@ -36,7 +36,10 @@ def get_data(market='Bitcoin'):
 	window1, window2 = LENGTH, 7*LENGTH
 	data[f'{window1} Day MA'] = data['Close**'].rolling(window=window1).mean()
 	data[f'{window1} Week MA'] = data['Close**'].rolling(window=window2).mean()
-	data = data[['Open*', 'High', 'Low', 'Close**', 'Volume', 'Market Cap', 'Date']]
+	data['Risk'] = data[f'{window1} Day MA']/data[f'{window1} Week MA']
+	min_max_scaler = preprocessing.MinMaxScaler()
+	np_scaled = min_max_scaler.fit_transform(data[['Risk']])
+	data['Risk'] = np_scaled
 	return data
 
 df = get_data()
@@ -55,38 +58,44 @@ price.segment(df['Date'], df['High'], df['Date'], df['Low'], color="black")
 price.vbar(df['Date'][inc], w, df['Open*'][inc], df['Close**'][inc], fill_color="#D5E1DD", line_color="black")
 price.vbar(df['Date'][dec], w, df['Open*'][dec], df['Close**'][dec], fill_color="#F2583E", line_color="black")
 
-MA = figure(plot_height=600, plot_width=int(PHI*600), title="Moving Averages", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
-MA.xaxis.major_label_orientation = np.pi/4
-MA.grid.grid_line_alpha=0.3
-MA.line(x='Date', y=f"{30} Day MA", line_width=1, line_alpha=0.6, source=source)	
-"""
-SETUP WIDGETS
-"""
-price_div = Div(text="""<p style="border:3px; border-style:solid; border-color:#FF0000; padding: 1em;">
-                    Stuff.</p>""",
-                    width=300, height=130)
-price_title = TextInput(title="Plot Title", value='Bitcoin')
+ma = figure(plot_height=600, plot_width=int(PHI*600), title="Moving Averages", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
+ma.xaxis.major_label_orientation = np.pi/4
+ma.grid.grid_line_alpha=0.3
+ma.line(x='Date', y="30 Day MA", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='30 Day MA')
+ma.line(x='Date', y="30 Week MA", line_width=1.618, line_alpha=0.6, source=source, line_color='green', legend_label='30 Week MA')
 
+risk = figure(plot_height=600, plot_width=int(PHI*600), title="Risk", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
+risk.xaxis.major_label_orientation = np.pi/4
+risk.grid.grid_line_alpha=0.3
+risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='Risk')
+
+"""
+Setting up widgets
+"""
+intro = Select(title="Cryptocurrency", value="Verge",
+               options=['Bitcoin', 'Ethereum', 'Litecoin', 'Verge', 'Chainlink'])
 """
 Set up callbacks
 """
-def update_title(attrname, old, new):
-    price.title.text = price_title.value
+# def callback(attr, old, new):
+# 	df = get_data(intro.value)
+# 	print("Got data")
+# 	source.data = df
+# 	print("Updated Data.")
 
-
-for t in [price_title]:
-    t.on_change('value', update_title)
-
+# intro.on_change('value', callback)
 
 # Set up layouts and add to document
-inputs1 = column(price_div, price_title)
 
-
+tab0 = row(intro)
+tab0 = Panel(child=tab0, title="Crypto Selection")
 tab1 = row(price, width=int(PHI*400))
 tab1 = Panel(child=tab1, title="Price")
-tab2 = row(MA, width=int(PHI*400))
+tab2 = row(ma, width=int(PHI*400))
 tab2 = Panel(child=tab2, title="Moving Averages")
-tabs = Tabs(tabs=[tab1, tab2])
+tab3 = row(risk, width=int(PHI*400))
+tab3 = Panel(child=tab3, title="Risk")
+tabs = Tabs(tabs=[tab0, tab1, tab2, tab3])
 
 curdoc().title = "CMC Dashboard"
 curdoc().theme = 'caliber'
