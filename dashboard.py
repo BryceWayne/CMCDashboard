@@ -56,7 +56,8 @@ price.vbar(df['Date'][inc], w, df['Open*'][inc], df['Close**'][inc], fill_color=
 price.vbar(df['Date'][dec], w, df['Open*'][dec], df['Close**'][dec], fill_color="#F2583E", line_color="black")
 
 MA = figure(plot_height=600, plot_width=int(PHI*600), title="Bitcoin", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
-MA.line(x='30 Day MA', y='30 Week MA', line_width=1, line_alpha=0.6, source=source)
+MA.line1(x='Date', y='30 Day MA', line_width=1, line_alpha=0.6, source=source)
+MA.line2(x='Date', y='30 Week MA', line_width=1, line_alpha=0.6, source=source)
 """
 SETUP WIDGETS
 """
