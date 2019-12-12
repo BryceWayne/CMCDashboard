@@ -59,6 +59,8 @@ _ = []
 for __ in df.columns:
 	if 'MA' in __.split(' '):
 		_.append(__)
+print(df.columns)
+print(_)
 MA = figure(plot_height=600, plot_width=int(PHI*600), title="Bitcoin", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 for __ in _: 
 	MA.line(x='Date', y=f"{__}", line_width=1, line_alpha=0.6, source=source)
