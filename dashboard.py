@@ -32,7 +32,10 @@ def get_data(market='Bitcoin'):
 	data = dfs[2]
 	data = data.iloc[::-1]
 	data['Date'] = pd.to_datetime(data['Date'])
-	# data.set_index(data['Date'], inplace=True)
+	LENGTH = 30
+	window1, window2 = LENGTH, 7*LENGTH
+	data[f'{window1} Day MA'] = data['Close**'].rolling(window=window1).mean()
+	data[f'{window2} Week MA'] = data['Close**'].rolling(window=window2).mean()
 	data = data[['Open*', 'High', 'Low', 'Close**', 'Volume', 'Market Cap', 'Date']]
 	return data
 
@@ -51,6 +54,10 @@ price.grid.grid_line_alpha=0.3
 price.segment(df['Date'], df['High'], df['Date'], df['Low'], color="black")
 price.vbar(df['Date'][inc], w, df['Open*'][inc], df['Close**'][inc], fill_color="#D5E1DD", line_color="black")
 price.vbar(df['Date'][dec], w, df['Open*'][dec], df['Close**'][dec], fill_color="#F2583E", line_color="black")
+
+MA = figure(plot_height=600, plot_width=int(PHI*600), title="Bitcoin", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
+MA.line(x='30 Day MA', y='210 Day MA', line_width=1, line_alpha=0.6, source=source)
+MA.plot(grid=True, logy=True, figsize=(10, 6), title=f'{market} Moving Averages')
 """
 SETUP WIDGETS
 """
@@ -76,7 +83,9 @@ inputs1 = column(price_div, price_title)
 
 tab1 = row(price, width=int(PHI*400))
 tab1 = Panel(child=tab1, title="Price")
-tabs = Tabs(tabs=[tab1])
+tab2 = row(MA, width=int(PHI*400))
+tab2 = Panel(child=tab2, title="Moving Averages")
+tabs = Tabs(tabs=[tab1, tab2])
 
 curdoc().title = "CMC Dashboard"
 curdoc().theme = 'caliber'
