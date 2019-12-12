@@ -55,15 +55,10 @@ price.segment(df['Date'], df['High'], df['Date'], df['Low'], color="black")
 price.vbar(df['Date'][inc], w, df['Open*'][inc], df['Close**'][inc], fill_color="#D5E1DD", line_color="black")
 price.vbar(df['Date'][dec], w, df['Open*'][dec], df['Close**'][dec], fill_color="#F2583E", line_color="black")
 
-_ = []
-for __ in df.columns:
-	if 'MA' in __.split(' '):
-		_.append(__)
-print(df.columns)
-print(_)
-MA = figure(plot_height=600, plot_width=int(PHI*600), title="Bitcoin", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
-for __ in _: 
-	MA.line(x='Date', y=f"{__}", line_width=1, line_alpha=0.6, source=source)
+MA = figure(plot_height=600, plot_width=int(PHI*600), title="Moving Averages", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
+MA.xaxis.major_label_orientation = np.pi/4
+MA.grid.grid_line_alpha=0.3
+MA.line(x='Date', y=f"{30} Day MA", line_width=1, line_alpha=0.6, source=source)	
 """
 SETUP WIDGETS
 """
