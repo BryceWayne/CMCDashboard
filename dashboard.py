@@ -57,7 +57,7 @@ price.vbar(df['Date'][dec], w, df['Open*'][dec], df['Close**'][dec], fill_color=
 
 _ = []
 for __ in df.columns:
-	if 'MA' in __.split(' ')[2]:
+	if 'MA' in __.split(' '):
 		_.append(__)
 MA = figure(plot_height=600, plot_width=int(PHI*600), title="Bitcoin", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 for __ in _: 
