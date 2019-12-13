@@ -20,10 +20,11 @@ DEFAULTS
 plt.style.use('default')
 PHI = 1.618
 w = 12*60*60*1000 # half day in ms
+WINDOW = 800
 """
 SETUP DATA
 """
-def get_data(market='Tezos'):
+def get_data(market='Bitcoin'):
     z = datetime.datetime.today()
     z.strftime("%x")
     temp = str(z).split('-')
@@ -50,12 +51,12 @@ source = ColumnDataSource(df)
 """
 SETUP PLOTS
 """
-intro = Select(title="Cryptocurrency", value="Tezos",
-               options=['Bitcoin', 'Ethereum', 'Litecoin', 'Verge', 'Chainlink', 'Tezos'])
+intro = Select(title="Cryptocurrency", value="Bitcoin",
+               options=['Bitcoin', 'Ethereum', 'Litecoin', 'Verge', 'Chainlink', 'Tezos', 'XRP', 'EOS', 'Stellar', 'Cardano', '0x'])
 
 inc = df['Close**'] > df['Open*']
 dec = df['Open*'] > df['Close**']
-price = figure(plot_height=600, plot_width=int(PHI*600), title="Tezos", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
+price = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Tezos", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 price.line(x='Date', y='Close**', line_width=1, line_alpha=0.6, source=source)
 price.xaxis.major_label_orientation = np.pi/4
 price.grid.grid_line_alpha=0.3
@@ -63,13 +64,13 @@ price.grid.grid_line_alpha=0.3
 # price.vbar(df['Date'][inc], w, df['Open*'][inc], df['Close**'][inc], fill_color="#D5E1DD", line_color="black")
 # price.vbar(df['Date'][dec], w, df['Open*'][dec], df['Close**'][dec], fill_color="#F2583E", line_color="black")
 
-ma = figure(plot_height=600, plot_width=int(PHI*600), title="Moving Averages", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
+ma = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Moving Averages", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 ma.xaxis.major_label_orientation = np.pi/4
 ma.grid.grid_line_alpha=0.3
 ma.line(x='Date', y="30 Day MA", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='30 Day MA')
 ma.line(x='Date', y="30 Week MA", line_width=1.618, line_alpha=0.6, source=source, line_color='green', legend_label='30 Week MA')
 
-risk = figure(plot_height=600, plot_width=int(PHI*600), title="Risk", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
+risk = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Risk", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 risk.xaxis.major_label_orientation = np.pi/4
 risk.grid.grid_line_alpha=0.3
 risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='Risk')
