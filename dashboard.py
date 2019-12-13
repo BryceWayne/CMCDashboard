@@ -87,7 +87,7 @@ def callback(attr, old, new):
 	# print("Got data")
 	source.data = df.to_dict('list')
 	# print("Updated Data.")
-	price.title.value = intro.value
+	price.title.text = intro.value
 
 intro.on_change('value', callback)
 
