@@ -24,25 +24,25 @@ w = 12*60*60*1000 # half day in ms
 SETUP DATA
 """
 def get_data(market='Tezos'):
-	z = datetime.datetime.today()
-	z.strftime("%x")
-	temp = str(z).split('-')
-	current_day = temp[0]+temp[1]+temp[2].split(" ")[0]
-	web = requests.get(f"https://coinmarketcap.com/currencies/{market.lower()}/historical-data/?start=20130428&end=" + current_day)
-	dfs = pd.read_html(web.text)
-	data = dfs[2]
-	data = data.iloc[::-1]
-	# print(data)
-	data['Date'] = pd.to_datetime(data['Date'])
-	LENGTH = 30
-	window1, window2 = LENGTH, 7*LENGTH
-	data[f'{window1} Day MA'] = data['Close**'].rolling(window=window1).mean()
-	data[f'{window1} Week MA'] = data['Close**'].rolling(window=window2).mean()
-	data['Risk'] = data[f'{window1} Day MA']/data[f'{window1} Week MA']
-	min_max_scaler = preprocessing.MinMaxScaler()
-	np_scaled = min_max_scaler.fit_transform(data[['Risk']])
-	data['Risk'] = np_scaled
-	return data
+    z = datetime.datetime.today()
+    z.strftime("%x")
+    temp = str(z).split('-')
+    current_day = temp[0]+temp[1]+temp[2].split(" ")[0]
+    web = requests.get(f"https://coinmarketcap.com/currencies/{market.lower()}/historical-data/?start=20130428&end=" + current_day)
+    dfs = pd.read_html(web.text)
+    data = dfs[2]
+    data = data.iloc[::-1]
+    # print(data)
+    data['Date'] = pd.to_datetime(data['Date'])
+    LENGTH = 30
+    window1, window2 = LENGTH, 7*LENGTH
+    data[f'{window1} Day MA'] = data['Close**'].rolling(window=window1).mean()
+    data[f'{window1} Week MA'] = data['Close**'].rolling(window=window2).mean()
+    data['Risk'] = data[f'{window1} Day MA']/data[f'{window1} Week MA']
+    min_max_scaler = preprocessing.MinMaxScaler()
+    np_scaled = min_max_scaler.fit_transform(data[['Risk']])
+    data['Risk'] = np_scaled
+    return data
 
 df = get_data()
 source = ColumnDataSource(df)
@@ -73,6 +73,8 @@ risk = figure(plot_height=600, plot_width=int(PHI*600), title="Risk", tools="cro
 risk.xaxis.major_label_orientation = np.pi/4
 risk.grid.grid_line_alpha=0.3
 risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='Risk')
+for _ in range(1, 8):
+	risk.line(x=source.data['Date'], y=(0.1*_+0.1)*np.ones_like(source.data['Close**']), line_width=1, line_alpha=0.1*_, line_color='blue')
 
 """
 Setting up widgets
@@ -82,12 +84,12 @@ Setting up widgets
 Set up callbacks
 """
 def callback(attr, old, new):
-	# print(attr, old, new)
-	df = get_data(intro.value)
-	# print("Got data")
-	source.data = df.to_dict('list')
-	# print("Updated Data.")
-	price.title.text = intro.value
+    # print(attr, old, new)
+    df = get_data(intro.value)
+    # print("Got data")
+    source.data = df.to_dict('list')
+    # print("Updated Data.")
+    price.title.text = intro.value
 
 intro.on_change('value', callback)
 
