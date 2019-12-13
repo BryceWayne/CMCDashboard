@@ -25,27 +25,26 @@ WINDOW = 800
 SETUP DATA
 """
 def get_data(market='Bitcoin'):
-    z = datetime.datetime.today()
-    z.strftime("%x")
-    temp = str(z).split('-')
-    current_day = temp[0]+temp[1]+temp[2].split(" ")[0]
-    web = requests.get(f"https://coinmarketcap.com/currencies/{market.lower()}/historical-data/?start=20130428&end=" + current_day)
-    dfs = pd.read_html(web.text)
-    data = dfs[2]
-    data = data.iloc[::-1]
-    # print(data)
-    data['Date'] = pd.to_datetime(data['Date'])
-    LENGTH = 30
-    window1, window2 = LENGTH, 7*LENGTH
-    data[f'{window1} Day MA'] = data['Close**'].rolling(window=window1).mean()
-    data[f'{window1} Week MA'] = data['Close**'].rolling(window=window2).mean()
-    data['Risk'] = data[f'{window1} Day MA']/data[f'{window1} Week MA']
-    min_max_scaler = preprocessing.MinMaxScaler()
-    np_scaled = min_max_scaler.fit_transform(data[['Risk']])
-    data['Risk'] = np_scaled
-    for _ in range(1, 9):
-	data[f"L{_}"] = _/8*np.ones_like(data['Date'])
-    return data
+	z = datetime.datetime.today()
+	z.strftime("%x")
+	temp = str(z).split('-')
+	current_day = temp[0]+temp[1]+temp[2].split(" ")[0]
+	web = requests.get(f"https://coinmarketcap.com/currencies/{market.lower()}/historical-data/?start=20130428&end=" + current_day)
+	dfs = pd.read_html(web.text)
+	data = dfs[2]
+	data = data.iloc[::-1]
+	data['Date'] = pd.to_datetime(data['Date'])
+	LENGTH = 30
+	window1, window2 = LENGTH, 7*LENGTH
+	data[f'{window1} Day MA'] = data['Close**'].rolling(window=window1).mean()
+	data[f'{window1} Week MA'] = data['Close**'].rolling(window=window2).mean()
+	data['Risk'] = data[f'{window1} Day MA']/data[f'{window1} Week MA']
+	min_max_scaler = preprocessing.MinMaxScaler()
+	np_scaled = min_max_scaler.fit_transform(data[['Risk']])
+	data['Risk'] = np_scaled
+	for _ in range(1, 9):
+		data[f"L{_}"] = _/8*np.ones_like(data['Close**'])
+	return data
 
 df = get_data()
 source = ColumnDataSource(df)
@@ -85,11 +84,8 @@ Setting up widgets
 Set up callbacks
 """
 def callback(attr, old, new):
-    # print(attr, old, new)
     df = get_data(intro.value)
-    # print("Got data")
     source.data = df.to_dict('list')
-    # print("Updated Data.")
     price.title.text = intro.value
 	
 intro.on_change('value', callback)
