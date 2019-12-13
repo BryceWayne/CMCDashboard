@@ -77,13 +77,13 @@ intro = Select(title="Cryptocurrency", value="Verge",
 """
 Set up callbacks
 """
-# def callback(attr, old, new):
-# 	df = get_data(intro.value)
-# 	print("Got data")
-# 	source.data = df
-# 	print("Updated Data.")
+def callback(attr, old, new):
+	df = get_data(intro.value)
+	print("Got data")
+	source.stream(df)
+	print("Updated Data.")
 
-# intro.on_change('value', callback)
+intro.on_change('value', callback)
 
 # Set up layouts and add to document
 
