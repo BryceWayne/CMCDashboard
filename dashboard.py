@@ -43,6 +43,7 @@ def get_data(market='Bitcoin'):
 	np_scaled = min_max_scaler.fit_transform(data[['Risk']])
 	data['Risk'] = np_scaled
 	for _ in range(1, 9):
+		print(_/8)
 		data[f"L{_}"] = _/8*np.ones_like(data['Close**'])
 	return data
 
