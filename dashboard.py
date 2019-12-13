@@ -91,7 +91,10 @@ def callback(attr, old, new):
     source.data = df.to_dict('list')
     # print("Updated Data.")
     price.title.text = intro.value
-
+    risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='Risk')
+    for _ in range(1, 8):
+        risk.line.data = dict(x=source.data['Date'], y=(0.1*_+0.1)*np.ones_like(source.data['Close**']))
+	
 intro.on_change('value', callback)
 
 # Set up layouts and add to document
