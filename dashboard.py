@@ -56,7 +56,7 @@ intro = Select(title="Cryptocurrency", value="Bitcoin",
 
 inc = df['Close**'] > df['Open*']
 dec = df['Open*'] > df['Close**']
-price = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Tezos", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
+price = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title=intro.value, tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 price.line(x='Date', y='Close**', line_width=1, line_alpha=0.6, source=source)
 price.xaxis.major_label_orientation = np.pi/4
 price.grid.grid_line_alpha=0.3
