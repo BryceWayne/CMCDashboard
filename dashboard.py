@@ -66,13 +66,13 @@ price.vbar(df['Date'][dec], w, df['Open*'][dec], df['Close**'][dec], fill_color=
 ma = figure(plot_height=600, plot_width=int(PHI*600), title="Moving Averages", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 ma.xaxis.major_label_orientation = np.pi/4
 ma.grid.grid_line_alpha=0.3
-ma.line(x='Date', y="30 Day MA", line_width=1, line_alpha=1, source=source, line_color='red', legend='30 Day MA')
-ma.line(x='Date', y="30 Week MA", line_width=1.618, line_alpha=0.6, source=source, line_color='green', legend='30 Week MA')
+ma.line(x='Date', y="30 Day MA", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='30 Day MA')
+ma.line(x='Date', y="30 Week MA", line_width=1.618, line_alpha=0.6, source=source, line_color='green', legend_label='30 Week MA')
 
 risk = figure(plot_height=600, plot_width=int(PHI*600), title="Risk", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 risk.xaxis.major_label_orientation = np.pi/4
 risk.grid.grid_line_alpha=0.3
-risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='red', legend='Risk')
+risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='Risk')
 
 """
 Setting up widgets
