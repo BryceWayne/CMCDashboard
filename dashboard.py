@@ -59,9 +59,9 @@ price = figure(plot_height=600, plot_width=int(PHI*600), title="Tezos", tools="c
 price.line(x='Date', y='Close**', line_width=1, line_alpha=0.6, source=source)
 price.xaxis.major_label_orientation = np.pi/4
 price.grid.grid_line_alpha=0.3
-price.segment(df['Date'], df['High'], df['Date'], df['Low'], color="black")
-price.vbar(df['Date'][inc], w, df['Open*'][inc], df['Close**'][inc], fill_color="#D5E1DD", line_color="black")
-price.vbar(df['Date'][dec], w, df['Open*'][dec], df['Close**'][dec], fill_color="#F2583E", line_color="black")
+# price.segment(df['Date'], df['High'], df['Date'], df['Low'], color="black")
+# price.vbar(df['Date'][inc], w, df['Open*'][inc], df['Close**'][inc], fill_color="#D5E1DD", line_color="black")
+# price.vbar(df['Date'][dec], w, df['Open*'][dec], df['Close**'][dec], fill_color="#F2583E", line_color="black")
 
 ma = figure(plot_height=600, plot_width=int(PHI*600), title="Moving Averages", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 ma.xaxis.major_label_orientation = np.pi/4
