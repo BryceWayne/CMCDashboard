@@ -43,6 +43,8 @@ def get_data(market='Bitcoin'):
     min_max_scaler = preprocessing.MinMaxScaler()
     np_scaled = min_max_scaler.fit_transform(data[['Risk']])
     data['Risk'] = np_scaled
+    for _ in range(1, 9):
+	data[f"L{_}"] = _/8*np.ones_like(data['Date'])
     return data
 
 df = get_data()
@@ -60,9 +62,6 @@ price = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title=intro.value
 price.line(x='Date', y='Close**', line_width=1, line_alpha=0.6, source=source)
 price.xaxis.major_label_orientation = np.pi/4
 price.grid.grid_line_alpha=0.3
-# price.segment(df['Date'], df['High'], df['Date'], df['Low'], color="black")
-# price.vbar(df['Date'][inc], w, df['Open*'][inc], df['Close**'][inc], fill_color="#D5E1DD", line_color="black")
-# price.vbar(df['Date'][dec], w, df['Open*'][dec], df['Close**'][dec], fill_color="#F2583E", line_color="black")
 
 ma = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Moving Averages", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 ma.xaxis.major_label_orientation = np.pi/4
@@ -74,8 +73,9 @@ risk = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Risk", tool
 risk.xaxis.major_label_orientation = np.pi/4
 risk.grid.grid_line_alpha=0.3
 risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='Risk')
-for _ in range(1, 8):
-	risk.line(x=source.data['Date'], y=(0.1*_+0.1)*np.ones_like(source.data['Close**']), line_width=1, line_alpha=0.1*_, line_color='blue')
+risk.vline_stack(['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8'],
+		 x='Date', source=source, line_width=1,
+		 alpha=[1,0.8,0.6,0.4,0.4,0.6,0.8,1], line_color='blue')
 
 """
 Setting up widgets
@@ -91,8 +91,6 @@ def callback(attr, old, new):
     source.data = df.to_dict('list')
     # print("Updated Data.")
     price.title.text = intro.value
-    for _ in range(1, 8):
-        risk.line.data = dict(x=source.data['Date'], y=(0.1*_+0.1)*np.ones_like(source.data['Close**']))
 	
 intro.on_change('value', callback)
 
