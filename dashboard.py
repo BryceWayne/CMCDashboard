@@ -43,7 +43,6 @@ def get_data(market='Bitcoin'):
 	np_scaled = min_max_scaler.fit_transform(data[['Risk']])
 	data['Risk'] = np_scaled
 	for _ in range(1, 9):
-		print(_/8)
 		data[f"L{_}"] = _/8*np.ones_like(data['Close**'])
 	return data
 
@@ -73,9 +72,14 @@ risk = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Risk", tool
 risk.xaxis.major_label_orientation = np.pi/4
 risk.grid.grid_line_alpha=0.3
 risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='Risk')
-risk.vline_stack(['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8'],
-		 x='Date', source=source, line_width=1,
-		 alpha=[1,0.8,0.6,0.4,0.4,0.6,0.8,1], line_color='blue')
+risk.line(x='Date', y="L1", source=source, line_width=1, line_alpha=1, line_color='blue')
+risk.line(x='Date', y="L2", source=source, line_width=1, line_alpha=0.8, line_color='blue')
+risk.line(x='Date', y="L3", source=source, line_width=1, line_alpha=0.6, line_color='blue')
+risk.line(x='Date', y="L4", source=source, line_width=1, line_alpha=0.4, line_color='blue')
+risk.line(x='Date', y="L5", source=source, line_width=1, line_alpha=0.4, line_color='blue')
+risk.line(x='Date', y="L6", source=source, line_width=1, line_alpha=0.6, line_color='blue')
+risk.line(x='Date', y="L7", source=source, line_width=1, line_alpha=0.8, line_color='blue')
+risk.line(x='Date', y="L8", source=source, line_width=1, line_alpha=1, line_color='blue')
 
 """
 Setting up widgets
