@@ -90,12 +90,12 @@ risk.xaxis.major_label_orientation = np.pi/4
 risk.grid.grid_line_alpha=0.3
 risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='Risk')
 risk.line(x='Date', y="L1", source=source, line_width=1, alpha=0.5, line_color='green', legend_label='Optimal Buy')
-risk.line(x='Date', y="L2", source=source, line_width=1, alpha=0.8, line_color='blue')
-risk.line(x='Date', y="L3", source=source, line_width=1, alpha=0.6, line_color='blue')
-risk.line(x='Date', y="L4", source=source, line_width=1, alpha=0.4, line_color='blue')
-risk.line(x='Date', y="L5", source=source, line_width=1, alpha=0.4, line_color='blue')
-risk.line(x='Date', y="L6", source=source, line_width=1, alpha=0.6, line_color='blue')
-risk.line(x='Date', y="L7", source=source, line_width=1, alpha=0.8, line_color='blue')
+risk.line(x='Date', y="L2", source=source, line_width=1, line_alpha=0.8, alpha=0.8, line_color='blue')
+risk.line(x='Date', y="L3", source=source, line_width=1, line_alpha=0.6, alpha=0.6, line_color='blue')
+risk.line(x='Date', y="L4", source=source, line_width=1, line_alpha=0.4, alpha=0.4, line_color='blue')
+risk.line(x='Date', y="L5", source=source, line_width=1, line_alpha=0.4, alpha=0.4, line_color='blue')
+risk.line(x='Date', y="L6", source=source, line_width=1, line_alpha=0.6, alpha=0.6, line_color='blue')
+risk.line(x='Date', y="L7", source=source, line_width=1, line_alpha=0.8, alpha=0.8, line_color='blue')
 risk.line(x='Date', y="L8", source=source, line_width=1, alpha=1, line_color='blue')
 risk.line(x='Date', y="L9", source=source, line_width=1, alpha=0.5, line_color='black', legend_label='Optimal Sell')
 
