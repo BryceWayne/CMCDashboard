@@ -1,7 +1,7 @@
 import numpy as np
 from bokeh.io import curdoc, output_file
 from bokeh.layouts import row, column
-from bokeh.models import ColumnDataSource, Range1d, RangeTool
+from bokeh.models import ColumnDataSource, Range1d, RangeTool, LinearAxis
 from bokeh.models.widgets import Slider, TextInput, Tabs, Panel, Button, DataTable, Div, CheckboxGroup
 from bokeh.models.widgets import NumberFormatter, TableColumn, Dropdown, RadioButtonGroup, Select
 from bokeh.plotting import figure
@@ -42,8 +42,10 @@ def get_data(market='Bitcoin'):
 	min_max_scaler = preprocessing.MinMaxScaler()
 	np_scaled = min_max_scaler.fit_transform(data[['Risk']])
 	data['Risk'] = np_scaled
+	data['Average Risk'] = data['Risk'].mean()
 	for _ in range(1, 10):
 		data[f"L{_}"] = _/10*np.ones_like(data['Close**'])
+	data['Scaled'] = data['Close**']/data['Close**'].max()
 	return data
 
 df = get_data()
@@ -57,7 +59,7 @@ intro = Select(title="Cryptocurrency", value="Bitcoin",
                options=['Bitcoin', 'Ethereum', 'Litecoin', 'Verge', 'Chainlink', 'Tezos', 'XRP', 'EOS', 'Stellar', 'Cardano', '0x'])
 
 ''' PRICE '''
-price = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title=intro.value, tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
+price = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title=intro.value, tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime", y_axis_type="log")
 price.line(x='Date', y='Close**', line_width=1, line_alpha=0.6, source=source)
 price.xaxis.major_label_orientation = np.pi/4
 price.yaxis.axis_label = 'Price'
@@ -98,6 +100,10 @@ risk.line(x='Date', y="L6", source=source, line_width=1, line_alpha=0.6, alpha=0
 risk.line(x='Date', y="L7", source=source, line_width=1, line_alpha=0.8, alpha=0.8, line_color='red')
 risk.line(x='Date', y="L8", source=source, line_width=1, alpha=1, line_color='red')
 risk.line(x='Date', y="L9", source=source, line_width=1, alpha=0.5, line_color='red', legend_label='Optimal Sell')
+
+risk.extra_y_ranges = {"Price": Range1d(start=0, end=1)}
+risk.add_layout(LinearAxis(y_range_name="Price"), 'right')
+risk.line(x='Date', y='Scaled', source=source, y_range_name='Price', line_width=0.6, line_alpha=0.6, alpha=0.6, color='blue', legend_label='Price')
 
 """
 Setting up widgets
