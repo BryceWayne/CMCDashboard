@@ -60,39 +60,40 @@ intro = Select(title="Cryptocurrency", value="Bitcoin",
 			'Tezos', 'XRP', 'EOS', 'Stellar', 'Cardano', '0x', 'Bitcoin-Cash'])
 
 ''' PRICE '''
-price = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title=intro.value, tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime", y_axis_type="log")
+price = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title=intro.value, tools="xpan", x_axis_type="datetime",
+				 y_axis_type="log", x_axis_location="above", x_range=(source.data['Date'][0], source.data['Date'][-1]))
 price.line(x='Date', y='Close**', line_width=1, line_alpha=0.6, source=source)
 price.xaxis.major_label_orientation = np.pi/4
 price.yaxis.axis_label = 'Price'
 price.grid.grid_line_alpha=0.3
 
-# select = figure(title="Drag the middle and edges of the selection box to change the range above",
-#                 plot_height=130, plot_width=WINDOW, y_range=price.y_range,
-#                 x_axis_type="datetime", y_axis_type=None, x_range=(df['Date'].iloc[0], df['Date'].iloc[-1]),
-#                 tools="", toolbar_location=None, background_fill_color="#efefef")
+select = figure(title="Drag the middle and edges of the selection box to change the range above",
+                plot_height=100, plot_width=int(PHI*WINDOW), y_range=price.y_range,
+                x_axis_type="datetime", y_axis_type=None, x_range=(source.data['Date'][0], source.data['Date'][-1]),
+                tools="", toolbar_location=None, background_fill_color="#efefef")
 
-# price_range = RangeTool(x_range=price.x_range)
-# price_range.overlay.fill_color = "navy"
-# price_range.overlay.fill_alpha = 0.1618
+price_range = RangeTool(x_range=price.x_range)
+price_range.overlay.fill_color = "navy"
+price_range.overlay.fill_alpha = 0.1618
 
-# select.line('Date', 'Close**', source=source)
-# select.ygrid.grid_line_color = None
-# select.add_tools(price_range)
-# select.toolbar.active_multi = price_range
+select.line('Date', 'Close**', source=source)
+select.ygrid.grid_line_color = None
+select.add_tools(price_range)
+select.toolbar.active_multi = price_range
 
 ''' MOVING AVERAGE'''
 ma = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Moving Averages", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 ma.xaxis.major_label_orientation = np.pi/4
 ma.grid.grid_line_alpha=0.3
-ma.line(x='Date', y="Daily MA", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='Daily MA')
-ma.line(x='Date', y="Weekly MA", line_width=1.618, line_alpha=0.6, source=source, line_color='green', legend_label='Weekly MA')
+ma.line(x='Date', y="Daily MA", line_width=1, line_alpha=1, source=source, line_color='red', legend='Daily MA')
+ma.line(x='Date', y="Weekly MA", line_width=1.618, line_alpha=0.6, source=source, line_color='green', legend='Weekly MA')
 ma_period = TextInput(value=str(30), title="Moving Average Period")
 
 risk = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Risk", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 risk.xaxis.major_label_orientation = np.pi/4
 risk.grid.grid_line_alpha=0.3
-risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='black', legend_label='Risk')
-risk.line(x='Date', y="L1", source=source, line_width=1, alpha=0.5, line_color='green', legend_label='Optimal Buy')
+risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='black', legend='Risk')
+risk.line(x='Date', y="L1", source=source, line_width=1, alpha=0.5, line_color='green', legend='Optimal Buy')
 risk.line(x='Date', y="L2", source=source, line_width=1, line_alpha=0.8, alpha=0.8, line_color='green')
 risk.line(x='Date', y="L3", source=source, line_width=1, line_alpha=0.6, alpha=0.6, line_color='green')
 risk.line(x='Date', y="L4", source=source, line_width=1, line_alpha=0.1618, alpha=0.4, line_color='green')
@@ -100,11 +101,11 @@ risk.line(x='Date', y="L5", source=source, line_width=1, line_alpha=0.1618, alph
 risk.line(x='Date', y="L6", source=source, line_width=1, line_alpha=0.6, alpha=0.6, line_color='red')
 risk.line(x='Date', y="L7", source=source, line_width=1, line_alpha=0.8, alpha=0.8, line_color='red')
 risk.line(x='Date', y="L8", source=source, line_width=1, alpha=1, line_color='red')
-risk.line(x='Date', y="L9", source=source, line_width=1, alpha=0.5, line_color='red', legend_label='Optimal Sell')
+risk.line(x='Date', y="L9", source=source, line_width=1, alpha=0.5, line_color='red', legend='Optimal Sell')
 
 risk.extra_y_ranges = {"Price": Range1d(start=0, end=1)}
 risk.add_layout(LinearAxis(y_range_name="Price"), 'right')
-risk.line(x='Date', y='Scaled', source=source, y_range_name='Price', line_width=0.6, line_alpha=0.6, alpha=0.6, color='blue', legend_label='Price')
+risk.line(x='Date', y='Scaled', source=source, y_range_name='Price', line_width=0.6, line_alpha=0.6, alpha=0.6, color='blue', legend='Price')
 
 """
 Setting up widgets
@@ -137,7 +138,7 @@ ma_period.on_change('value', change_ma_period)
 tab0 = row(intro)
 tab0 = Panel(child=tab0, title="Crypto Selection")
 
-tab1 = row(column(price), width=int(PHI*400))
+tab1 = row(column(price, select), width=int(PHI*400))
 tab1 = Panel(child=tab1, title="Price")
 
 tab2 = row(ma, column(ma_period), width=int(PHI*400))
