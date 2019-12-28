@@ -2,6 +2,7 @@ import numpy as np
 from bokeh.io import curdoc, output_file
 from bokeh.layouts import row, column
 from bokeh.models import ColumnDataSource, Range1d, RangeTool, LinearAxis
+from bokeh.models.ranges import DataRange1d
 from bokeh.models.widgets import Slider, TextInput, Tabs, Panel, Button, DataTable, Div, CheckboxGroup
 from bokeh.models.widgets import NumberFormatter, TableColumn, Dropdown, RadioButtonGroup, Select
 from bokeh.plotting import figure
@@ -57,18 +58,22 @@ SETUP PLOTS
 ''' INTRO '''
 intro = Select(title="Cryptocurrency", value="Bitcoin",
                options=['Bitcoin', 'Ethereum', 'Litecoin', 'Verge', 'Chainlink',
-			'Tezos', 'XRP', 'EOS', 'Stellar', 'Cardano', '0x', 'Bitcoin-Cash'])
+						'Tezos', 'XRP', 'EOS', 'Stellar', 'Cardano', '0x', 'Bitcoin-Cash'])
 
 ''' PRICE '''
-price = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title=intro.value, tools="xpan", x_axis_type="datetime",
-				 y_axis_type="log", x_axis_location="above", x_range=(source.data['Date'][0], source.data['Date'][-1]))
-price.line(x='Date', y='Close**', line_width=1, line_alpha=0.6, source=source)
+price = figure(plot_height=int(0.9*WINDOW), plot_width=int(PHI*WINDOW), title=intro.value, tools="xpan", x_axis_type="datetime",
+				 y_axis_type="linear", x_range=(source.data['Date'][0], source.data['Date'][-1]),
+				 y_range=(min(source.data['Close**']), max(source.data['Close**'])))
+price.line(x='Date', y='Close**', line_width=1.618, source=source)
+price.line(x='Date', y='Daily MA', line_width=1, line_alpha=0.8, line_color='red', legend_label='Daily MA', source=source)
+price.line(x='Date', y='Weekly MA', line_width=1, line_alpha=0.6, line_color='green', legend_label='Weekly MA', source=source)
 price.xaxis.major_label_orientation = np.pi/4
 price.yaxis.axis_label = 'Price'
+price.xaxis.axis_label = 'Date'
 price.grid.grid_line_alpha=0.3
 
 select = figure(title="Drag the middle and edges of the selection box to change the range above",
-                plot_height=100, plot_width=int(PHI*WINDOW), y_range=price.y_range,
+                plot_height=int(0.1*WINDOW), plot_width=int(PHI*WINDOW), y_range=price.y_range,
                 x_axis_type="datetime", y_axis_type=None, x_range=(source.data['Date'][0], source.data['Date'][-1]),
                 tools="", toolbar_location=None, background_fill_color="#efefef")
 
@@ -85,15 +90,15 @@ select.toolbar.active_multi = price_range
 ma = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Moving Averages", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 ma.xaxis.major_label_orientation = np.pi/4
 ma.grid.grid_line_alpha=0.3
-ma.line(x='Date', y="Daily MA", line_width=1, line_alpha=1, source=source, line_color='red', legend='Daily MA')
-ma.line(x='Date', y="Weekly MA", line_width=1.618, line_alpha=0.6, source=source, line_color='green', legend='Weekly MA')
+ma.line(x='Date', y="Daily MA", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='Daily MA')
+ma.line(x='Date', y="Weekly MA", line_width=1.618, line_alpha=0.6, source=source, line_color='green', legend_label='Weekly MA')
 ma_period = TextInput(value=str(30), title="Moving Average Period")
 
 risk = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Risk", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
 risk.xaxis.major_label_orientation = np.pi/4
 risk.grid.grid_line_alpha=0.3
-risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='black', legend='Risk')
-risk.line(x='Date', y="L1", source=source, line_width=1, alpha=0.5, line_color='green', legend='Optimal Buy')
+risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='black', legend_label='Risk')
+risk.line(x='Date', y="L1", source=source, line_width=1, alpha=0.5, line_color='green', legend_label='Optimal Buy')
 risk.line(x='Date', y="L2", source=source, line_width=1, line_alpha=0.8, alpha=0.8, line_color='green')
 risk.line(x='Date', y="L3", source=source, line_width=1, line_alpha=0.6, alpha=0.6, line_color='green')
 risk.line(x='Date', y="L4", source=source, line_width=1, line_alpha=0.1618, alpha=0.4, line_color='green')
@@ -101,11 +106,11 @@ risk.line(x='Date', y="L5", source=source, line_width=1, line_alpha=0.1618, alph
 risk.line(x='Date', y="L6", source=source, line_width=1, line_alpha=0.6, alpha=0.6, line_color='red')
 risk.line(x='Date', y="L7", source=source, line_width=1, line_alpha=0.8, alpha=0.8, line_color='red')
 risk.line(x='Date', y="L8", source=source, line_width=1, alpha=1, line_color='red')
-risk.line(x='Date', y="L9", source=source, line_width=1, alpha=0.5, line_color='red', legend='Optimal Sell')
+risk.line(x='Date', y="L9", source=source, line_width=1, alpha=0.5, line_color='red', legend_label='Optimal Sell')
 
 risk.extra_y_ranges = {"Price": Range1d(start=0, end=1)}
 risk.add_layout(LinearAxis(y_range_name="Price"), 'right')
-risk.line(x='Date', y='Scaled', source=source, y_range_name='Price', line_width=0.6, line_alpha=0.6, alpha=0.6, color='blue', legend='Price')
+risk.line(x='Date', y='Scaled', source=source, y_range_name='Price', line_width=0.6, line_alpha=0.6, alpha=0.6, color='blue', legend_label='Price')
 
 """
 Setting up widgets
@@ -118,8 +123,22 @@ def select_crypto(attr, old, new):
     df = get_data(intro.value)
     source.data = df.to_dict('list')
     price.title.text = intro.value
+    price.x_range.start = select.x_range.start = source.data['Date'][0]
+    price.x_range.end = select.x_range.end = source.data['Date'][-1]
+    price.y_range.start = min(source.data['Close**'])
+    price.y_range.end = max(source.data['Close**'])
 	
 intro.on_change('value', select_crypto)
+
+def update_y_range(attr, new, old):
+	x_range = (price_range.x_range.start, price_range.x_range.end)
+	dates = source.data['Date']
+	close = source.data['Close**']
+	price.y_range.start = min(close[dates.index(x_range[0]): dates.index(x_range[1])])
+	price.y_range.end = max(close[dates.index(x_range[0]): dates.index(x_range[1])])
+
+price_range.x_range.on_change('start', update_y_range)
+price_range.x_range.on_change('end', update_y_range)
 
 def change_ma_period(attr, old, new):
 	df = pd.DataFrame(source.data)
