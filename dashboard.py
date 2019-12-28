@@ -56,7 +56,8 @@ SETUP PLOTS
 """
 ''' INTRO '''
 intro = Select(title="Cryptocurrency", value="Bitcoin",
-               options=['Bitcoin', 'Ethereum', 'Litecoin', 'Verge', 'Chainlink', 'Tezos', 'XRP', 'EOS', 'Stellar', 'Cardano', '0x'])
+               options=['Bitcoin', 'Ethereum', 'Litecoin', 'Verge', 'Chainlink',
+			'Tezos', 'XRP', 'EOS', 'Stellar', 'Cardano', '0x', 'Bitcoin-Cash'])
 
 ''' PRICE '''
 price = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title=intro.value, tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime", y_axis_type="log")
