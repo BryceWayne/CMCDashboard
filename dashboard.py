@@ -141,7 +141,7 @@ ma_period = TextInput(value=str(30), title="Moving Average Period")
 ''' RSI '''
 rsi_plot = figure(plot_height=int(0.9*WINDOW), plot_width=int(PHI*WINDOW), title=intro.value+' Relative Strength Index', tools="xpan", x_axis_type="datetime",
 				 y_axis_type="linear", x_range=(source.data['Date'][0], source.data['Date'][-1]),
-				 y_range=(min(source.data['RSI']), max(source.data['RSI'])))
+				 y_range=(0, 100))
 rsi_plot.line(x='Date', y='RSI', line_width=1.618, source=source)
 rsi_plot.xaxis.major_label_orientation = np.pi/4
 rsi_plot.yaxis.axis_label = 'RSI'
