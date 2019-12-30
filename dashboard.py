@@ -5,6 +5,7 @@ from bokeh.models import ColumnDataSource, Range1d, RangeTool, LinearAxis
 from bokeh.models.ranges import DataRange1d
 from bokeh.models.widgets import Slider, TextInput, Tabs, Panel, Button, DataTable, Div, CheckboxGroup
 from bokeh.models.widgets import NumberFormatter, TableColumn, Dropdown, RadioButtonGroup, Select
+from bokeh.models.glyphs import VBar
 from bokeh.plotting import figure
 from bokeh.models import CustomJS, HoverTool, NumeralTickFormatter
 from pprint import pprint
@@ -53,7 +54,7 @@ def get_data(market='Bitcoin'):
 	return data
 
 def RSI(df, n=14):
-	prices = df['Close**']
+	prices = df['Close']
 	deltas = np.diff(prices)
 	seed = deltas[:n+1]
 	up = seed[seed >= 0].sum()/n
@@ -89,10 +90,12 @@ intro = Select(title="Cryptocurrency", value="Bitcoin",
 						'Tezos', 'XRP', 'EOS', 'Stellar', 'Cardano', '0x', 'Bitcoin-Cash'])
 
 ''' PRICE '''
+inc = source.data['Close'] >= source.data['Open']
+dec = source.data['Close'] < source.data['Open']
 price = figure(plot_height=int(0.9*WINDOW), plot_width=int(PHI*WINDOW), title=intro.value, tools="xpan, hover", x_axis_type="datetime",
 				 y_axis_type="linear", x_range=(source.data['Date'][0], source.data['Date'][-1]),
-				 y_range=(min(source.data['Close**']), max(source.data['Close**'])))
-price.line(x='Date', y='Close**', line_width=1.618, source=source)
+				 y_range=(min(source.data['Low']), max(source.data['High'])))
+price.line(x='Date', y='Close', line_width=1.618, source=source)
 price.line(x='Date', y='Daily MA', line_width=1, line_alpha=0.8, line_color='red', legend_label='Daily MA', source=source)
 price.line(x='Date', y='Weekly MA', line_width=1, line_alpha=0.6, line_color='green', legend_label='Weekly MA', source=source)
 price.xaxis.major_label_orientation = np.pi/4
@@ -101,11 +104,11 @@ price.grid.grid_line_alpha=0.3
 price_hover = price.select(dict(type=HoverTool))
 price_hover.tooltips = [
 		("Date", "@Date{%Y-%m-%d}"),
-        ("Open", "@Open{%0.0000f}"),
-        ("High", "@High{%0.0000f}"),
-        ("Low", "@Low{%0.0000f}"),
-        ("Close", "@Close{%0.0000f}"),
-        ("Volume", "@Volume{%0.00f}"),
+        ("Open", "@Open{%0.00000000f}"),
+        ("High", "@High{%0.00000000f}"),
+        ("Low", "@Low{%0.00000000f}"),
+        ("Close", "@Close{%0.00000000f}"),
+        ("Volume", "@Volume{%0.00000000f}"),
         ]
 price_hover.formatters = {
         'Date': 'datetime',
@@ -115,6 +118,9 @@ price_hover.formatters = {
         'Close' : 'printf',
         'Volume' : 'printf',
     }
+price.segment(x0='Date', y0='High', x1='Date', y1='Low', color="black", source=source)
+price.vbar(x=source.data['Date'][inc], width=w, bottom=source.data['Open'][inc], top=source.data['Close'][inc], fill_color="#00B81B", line_color="black")
+price.vbar(x=source.data['Date'][dec], width=w, top=source.data['Open'][dec], bottom=source.data['Close'][dec], fill_color="#FF3535", line_color="black")
 
 select = figure(title="Drag the middle and edges of the selection box to change the range above",
                 plot_height=int(0.1*WINDOW), plot_width=int(PHI*WINDOW), y_range=price.y_range,
@@ -125,7 +131,7 @@ price_range = RangeTool(x_range=price.x_range)
 price_range.overlay.fill_color = "pink"
 price_range.overlay.fill_alpha = 0.1618
 
-select.line('Date', 'Close**', source=source)
+select.line('Date', 'Close', source=source)
 select.ygrid.grid_line_color = None
 select.add_tools(price_range)
 select.toolbar.active_multi = price_range
@@ -166,15 +172,15 @@ risk = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Risk", tool
 risk.xaxis.major_label_orientation = np.pi/4
 risk.grid.grid_line_alpha=0.3
 risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='black', legend_label='Risk')
-risk.line(x='Date', y="L1", source=source, line_width=1, alpha=0.5, line_color='green', legend_label='Optimal Buy')
-risk.line(x='Date', y="L2", source=source, line_width=1, line_alpha=0.8, alpha=0.8, line_color='green')
-risk.line(x='Date', y="L3", source=source, line_width=1, line_alpha=0.6, alpha=0.6, line_color='green')
-risk.line(x='Date', y="L4", source=source, line_width=1, line_alpha=0.1618, alpha=0.4, line_color='green')
-risk.line(x='Date', y="L5", source=source, line_width=1, line_alpha=0.1618, alpha=0.4, line_color='red')
-risk.line(x='Date', y="L6", source=source, line_width=1, line_alpha=0.6, alpha=0.6, line_color='red')
-risk.line(x='Date', y="L7", source=source, line_width=1, line_alpha=0.8, alpha=0.8, line_color='red')
-risk.line(x='Date', y="L8", source=source, line_width=1, alpha=1, line_color='red')
-risk.line(x='Date', y="L9", source=source, line_width=1, alpha=0.5, line_color='red', legend_label='Optimal Sell')
+# risk.line(x='Date', y="L1", source=source, line_width=1, alpha=0.5, line_color='green', legend_label='Optimal Buy')
+# risk.line(x='Date', y="L2", source=source, line_width=1, line_alpha=0.8, alpha=0.8, line_color='green')
+# risk.line(x='Date', y="L3", source=source, line_width=1, line_alpha=0.6, alpha=0.6, line_color='green')
+# risk.line(x='Date', y="L4", source=source, line_width=1, line_alpha=0.1618, alpha=0.4, line_color='green')
+# risk.line(x='Date', y="L5", source=source, line_width=1, line_alpha=0.1618, alpha=0.4, line_color='red')
+# risk.line(x='Date', y="L6", source=source, line_width=1, line_alpha=0.6, alpha=0.6, line_color='red')
+# risk.line(x='Date', y="L7", source=source, line_width=1, line_alpha=0.8, alpha=0.8, line_color='red')
+# risk.line(x='Date', y="L8", source=source, line_width=1, alpha=1, line_color='red')
+# risk.line(x='Date', y="L9", source=source, line_width=1, alpha=0.5, line_color='red', legend_label='Optimal Sell')
 
 risk.extra_y_ranges = {"Price": Range1d(start=0, end=1)}
 risk.add_layout(LinearAxis(y_range_name="Price"), 'right')
@@ -188,18 +194,27 @@ Setting up widgets
 Set up callbacks
 """
 def select_crypto(attr, old, new):
-    df = get_data(intro.value)
-    source.data = df.to_dict('list')
-    price.title.text = intro.value
-    price.x_range.start = select.x_range.start = source.data['Date'][0]
-    price.x_range.end = select.x_range.end = source.data['Date'][-1]
-    price.y_range.start = min(source.data['Close**'])
-    price.y_range.end = max(source.data['Close**'])
-    rsi_plot.x_range.start = select_rsi.x_range.start = source.data['Date'][0]
-    rsi_plot.x_range.end = select_rsi.x_range.end = source.data['Date'][-1]
-    rsi_plot.y_range.start = min(source.data['RSI'])
-    rsi_plot.y_range.end = max(source.data['RSI'])
-    price_hover = price.select(dict(type=HoverTool))
+	df = get_data(intro.value)
+	source.data = df.to_dict('list')
+	price.title.text = intro.value
+	price.x_range.start = select.x_range.start = source.data['Date'][0]
+	price.x_range.end = select.x_range.end = source.data['Date'][-1]
+	price.y_range.start = min(source.data['Close**'])
+	price.y_range.end = max(source.data['Close**'])
+	rsi_plot.x_range.start = select_rsi.x_range.start = source.data['Date'][0]
+	rsi_plot.x_range.end = select_rsi.x_range.end = source.data['Date'][-1]
+	rsi_plot.y_range.start = min(source.data['RSI'])
+	rsi_plot.y_range.end = max(source.data['RSI'])
+	price_hover = price.select(dict(type=HoverTool))
+	inc = source.data['Close'] >= source.data['Open']
+	dec = source.data['Close'] < source.data['Open']
+	price.vbar.x = source.data['Date'][inc]
+	price.vbar.bottom = source.data['Open'][inc]
+	price.vbar.top = source.data['Close'][inc]
+	price.vbar.x = source.data['Date'][dec]
+	price.vbar.bottom = source.data['Open'][dec]
+	price.vbar.top = source.data['Close'][dec]
+	
 	
 intro.on_change('value', select_crypto)
 
