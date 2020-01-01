@@ -76,8 +76,8 @@ def RSI(df, n=14):
 		rs = up/down
 		rsi[i] = 100-100/(1 + rs)
 	df['RSI'] = rsi
-	df['RSI30'] = 0.3*np.ones_like(rsi)
-	df['RSI70'] = 0.7*np.ones_like(rsi)
+	df['RSI30'] = 30*np.ones_like(rsi)
+	df['RSI70'] = 70*np.ones_like(rsi)
 	return df
 
 df = get_data()
@@ -151,8 +151,8 @@ rsi_plot = figure(plot_height=int(0.9*WINDOW), plot_width=int(PHI*WINDOW), title
 				 y_axis_type="linear", x_range=(source.data['Date'][0], source.data['Date'][-1]),
 				 y_range=(0, 100))
 rsi_plot.line(x='Date', y='RSI', line_width=1.618, source=source)
-rsi_plot.line(x='Date', y='RSI30', line_width=1, source=source, line_color='red', line_dash='dashed')
-rsi_plot.line(x='Date', y='RSI70', line_width=1, source=source, line_color='green', line_dash='dashed')
+rsi_plot.line(x='Date', y='RSI30', line_width=1, source=source, line_color='red', line_dash='dashed', legend_label='Buy')
+rsi_plot.line(x='Date', y='RSI70', line_width=1, source=source, line_color='green', line_dash='dashed', legend_label='Sell')
 rsi_plot.xaxis.major_label_orientation = np.pi/4
 rsi_plot.yaxis.axis_label = 'RSI'
 rsi_plot.grid.grid_line_alpha=1/PHI
