@@ -76,8 +76,8 @@ def RSI(df, n=14):
 		rs = up/down
 		rsi[i] = 100-100/(1 + rs)
 	df['RSI'] = rsi
-	df['RSI30'] = 0.3*np.zeros_like(rsi)
-	df['RSI70'] = 0.7*np.zeros_like(rsi)
+	df['RSI30'] = 0.3*np.ones_like(rsi)
+	df['RSI70'] = 0.7*np.ones_like(rsi)
 	return df
 
 df = get_data()
@@ -176,15 +176,6 @@ risk = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Risk", tool
 risk.xaxis.major_label_orientation = np.pi/4
 risk.grid.grid_line_alpha=0.3
 risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='black', legend_label='Risk')
-# risk.line(x='Date', y="L1", source=source, line_width=1, alpha=0.5, line_color='green', legend_label='Optimal Buy')
-# risk.line(x='Date', y="L2", source=source, line_width=1, line_alpha=0.8, alpha=0.8, line_color='green')
-# risk.line(x='Date', y="L3", source=source, line_width=1, line_alpha=0.6, alpha=0.6, line_color='green')
-# risk.line(x='Date', y="L4", source=source, line_width=1, line_alpha=0.1618, alpha=0.4, line_color='green')
-# risk.line(x='Date', y="L5", source=source, line_width=1, line_alpha=0.1618, alpha=0.4, line_color='red')
-# risk.line(x='Date', y="L6", source=source, line_width=1, line_alpha=0.6, alpha=0.6, line_color='red')
-# risk.line(x='Date', y="L7", source=source, line_width=1, line_alpha=0.8, alpha=0.8, line_color='red')
-# risk.line(x='Date', y="L8", source=source, line_width=1, alpha=1, line_color='red')
-# risk.line(x='Date', y="L9", source=source, line_width=1, alpha=0.5, line_color='red', legend_label='Optimal Sell')
 
 risk.extra_y_ranges = {"Price": Range1d(start=0, end=1)}
 risk.add_layout(LinearAxis(y_range_name="Price"), 'right')
