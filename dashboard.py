@@ -40,16 +40,16 @@ def get_data(market='Bitcoin'):
 	data['Open'] = data['Open*']
 	LENGTH = 30
 	window1, window2 = LENGTH, 7*LENGTH
-	data['Daily MA'] = data['Close**'].rolling(window=window1).mean()
-	data['Weekly MA'] = data['Close**'].rolling(window=window2).mean()
+	data['Daily MA'] = data['Close'].rolling(window=window1).mean()
+	data['Weekly MA'] = data['Close'].rolling(window=window2).mean()
 	data['Risk'] = data['Daily MA']/data['Weekly MA']
 	min_max_scaler = preprocessing.MinMaxScaler()
 	np_scaled = min_max_scaler.fit_transform(data[['Risk']])
 	data['Risk'] = np_scaled
 	data['Average Risk'] = data['Risk'].mean()
 	for _ in range(1, 10):
-		data[f"L{_}"] = _/10*np.ones_like(data['Close**'])
-	data['Scaled'] = data['Close**']/data['Close**'].max()
+		data[f"L{_}"] = _/10*np.ones_like(data['Close'])
+	data['Scaled'] = data['Close']/data['Close'].max()
 	data = RSI(data)
 	return data
 
@@ -91,10 +91,10 @@ intro = Select(title="Cryptocurrency", value="Bitcoin",
                options=['Bitcoin', 'Ethereum', 'Litecoin', 'Verge', 'Chainlink',
 						'Tezos', 'XRP', 'EOS', 'Stellar', 'Cardano', '0x', 'Bitcoin-Cash'])
 
-''' PRICE '''
-inc = source.data['Close'] >= source.data['Open']
-dec = source.data['Close'] < source.data['Open']
-price = figure(plot_height=int(0.9*WINDOW), plot_width=int(PHI*WINDOW), title=intro.value, tools="xpan, hover", x_axis_type="datetime",
+# ''' PRICE '''
+# inc = source.data['Close'] >= source.data['Open']
+# dec = source.data['Close'] < source.data['Open']
+price = figure(plot_height=int(0.8*WINDOW), plot_width=int(PHI*WINDOW), title=intro.value, tools="xpan, hover", x_axis_type="datetime",
 				 y_axis_type="linear", x_range=(source.data['Date'][0], source.data['Date'][-1]),
 				 y_range=(min(source.data['Low']), max(source.data['High'])))
 price.line(x='Date', y='Close', line_width=1.618, source=source)
@@ -120,17 +120,17 @@ price_hover.formatters = {
         'Close' : 'printf',
         'Volume' : 'printf',
     }
-price.segment(x0='Date', y0='High', x1='Date', y1='Low', color="black", source=source)
-price.vbar(x=source.data['Date'][inc], width=w, bottom=source.data['Open'][inc], top=source.data['Close'][inc], fill_color="#00B81B", line_color="black")
-price.vbar(x=source.data['Date'][dec], width=w, top=source.data['Open'][dec], bottom=source.data['Close'][dec], fill_color="#FF3535", line_color="black")
+# price.segment(x0='Date', y0='High', x1='Date', y1='Low', color="black", source=source)
+# price.vbar(x=source.data['Date'][inc], width=w, bottom=source.data['Open'][inc], top=source.data['Close'][inc], fill_color="#00B81B", line_color="black")
+# price.vbar(x=source.data['Date'][dec], width=w, top=source.data['Open'][dec], bottom=source.data['Close'][dec], fill_color="#FF3535", line_color="black")
 
 select = figure(title="Drag the middle and edges of the selection box to change the range above",
-                plot_height=int(0.1*WINDOW), plot_width=int(PHI*WINDOW), y_range=price.y_range,
+                plot_height=int(0.2*WINDOW), plot_width=int(PHI*WINDOW), y_range=price.y_range,
                 x_axis_type="datetime", y_axis_type=None, x_range=(source.data['Date'][0], source.data['Date'][-1]),
                 tools="", toolbar_location=None, background_fill_color="#efefef")
 
 price_range = RangeTool(x_range=price.x_range)
-price_range.overlay.fill_color = "pink"
+price_range.overlay.fill_color = "navy"
 price_range.overlay.fill_alpha = 0.1618
 
 select.line('Date', 'Close', source=source)
@@ -139,31 +139,31 @@ select.add_tools(price_range)
 select.toolbar.active_multi = price_range
 
 ''' MOVING AVERAGE'''
-ma = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Moving Averages", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
-ma.xaxis.major_label_orientation = np.pi/4
-ma.grid.grid_line_alpha=0.3
-ma.line(x='Date', y="Daily MA", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='Daily MA')
-ma.line(x='Date', y="Weekly MA", line_width=1.618, line_alpha=0.6, source=source, line_color='green', legend_label='Weekly MA')
-ma_period = TextInput(value=str(30), title="Moving Average Period")
+# ma = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Moving Averages", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
+# ma.xaxis.major_label_orientation = np.pi/4
+# ma.grid.grid_line_alpha=0.3
+# ma.line(x='Date', y="Daily MA", line_width=1, line_alpha=1, source=source, line_color='red', legend_label='Daily MA')
+# ma.line(x='Date', y="Weekly MA", line_width=1.618, line_alpha=0.6, source=source, line_color='green', legend_label='Weekly MA')
+# ma_period = TextInput(value=str(30), title="Moving Average Period")
 
 ''' RSI '''
-rsi_plot = figure(plot_height=int(0.9*WINDOW), plot_width=int(PHI*WINDOW), title=intro.value+' Relative Strength Index', tools="xpan", x_axis_type="datetime",
-				 y_axis_type="linear", x_range=(source.data['Date'][0], source.data['Date'][-1]),
+rsi_plot = figure(plot_height=int(0.8*WINDOW), plot_width=int(PHI*WINDOW), title=intro.value+' Relative Strength Index', tools="xpan", x_axis_type="datetime",
+				 y_axis_type="linear", x_range=(source.data['Date'][10], source.data['Date'][-10]),
 				 y_range=(0, 100))
-rsi_plot.line(x='Date', y='RSI', line_width=1.618, source=source)
-rsi_plot.line(x='Date', y='RSI30', line_width=1, source=source, line_color='red', line_dash='dashed', legend_label='Buy')
-rsi_plot.line(x='Date', y='RSI70', line_width=1, source=source, line_color='green', line_dash='dashed', legend_label='Sell')
+rsi_plot.line(x='Date', y='RSI', line_width=1, source=source, legend_label='Relative Strength Index')
+rsi_plot.line(x='Date', y='RSI30', line_width=1, source=source, line_color='red', line_dash='dashed', legend_label='Oversold')
+rsi_plot.line(x='Date', y='RSI70', line_width=1, source=source, line_color='green', line_dash='dashed', legend_label='Overbought')
 rsi_plot.xaxis.major_label_orientation = np.pi/4
 rsi_plot.yaxis.axis_label = 'RSI'
 rsi_plot.grid.grid_line_alpha=1/PHI
 
 select_rsi = figure(title="Drag the middle and edges of the selection box to change the range above",
-                plot_height=int(0.1*WINDOW), plot_width=int(PHI*WINDOW), y_range=rsi_plot.y_range,
+                plot_height=int(0.2*WINDOW), plot_width=int(PHI*WINDOW), y_range=rsi_plot.y_range,
                 x_axis_type="datetime", y_axis_type=None, x_range=(source.data['Date'][0], source.data['Date'][-1]),
                 tools="", toolbar_location=None, background_fill_color="#efefef")
 
 rsi_range = RangeTool(x_range=rsi_plot.x_range)
-rsi_range.overlay.fill_color = "pink"
+rsi_range.overlay.fill_color = "navy"
 rsi_range.overlay.fill_alpha = 0.1618
 
 select_rsi.line('Date', 'RSI', source=source)
@@ -172,14 +172,15 @@ select_rsi.add_tools(rsi_range)
 select_rsi.toolbar.active_multi = rsi_range
 
 ''' RISK '''
-risk = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title="Risk", tools="crosshair,pan,reset,save,wheel_zoom", x_axis_type="datetime")
+risk = figure(plot_height=WINDOW, plot_width=int(PHI*WINDOW), title=intro.value + " Risk", tools="crosshair", x_axis_type="datetime")
 risk.xaxis.major_label_orientation = np.pi/4
 risk.grid.grid_line_alpha=0.3
 risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='black', legend_label='Risk')
+risk.y_range = Range1d(start=0, end=1)
 
-risk.extra_y_ranges = {"Price": Range1d(start=0, end=1)}
-risk.add_layout(LinearAxis(y_range_name="Price"), 'right')
-risk.line(x='Date', y='Scaled', source=source, y_range_name='Price', line_width=0.6, line_alpha=0.6, alpha=0.6, color='blue', legend_label='Price')
+risk.extra_y_ranges['Price'] = Range1d(start=source.data['Close'].min(), end=source.data['Close'].max())
+risk.add_layout(LinearAxis(y_range_name="Price", axis_label='Price ($)'), 'right')
+risk.line(x='Date', y='Close', source=source, y_range_name='Price', line_width=1/PHI, color='blue', legend_label='Price')
 
 """
 Setting up widgets
@@ -196,19 +197,22 @@ def select_crypto(attr, old, new):
 	price.x_range.end = select.x_range.end = source.data['Date'][-1]
 	price.y_range.start = min(source.data['Close**'])
 	price.y_range.end = max(source.data['Close**'])
+	rsi_plot.title.text = str(intro.value) + ' Relative Strength Index'
 	rsi_plot.x_range.start = select_rsi.x_range.start = source.data['Date'][0]
 	rsi_plot.x_range.end = select_rsi.x_range.end = source.data['Date'][-1]
 	rsi_plot.y_range.start = min(source.data['RSI'])
 	rsi_plot.y_range.end = max(source.data['RSI'])
+	risk.title.text = str(intro.value) + ' Risk'
 	price_hover = price.select(dict(type=HoverTool))
-	inc = source.data['Close'] >= source.data['Open']
-	dec = source.data['Close'] < source.data['Open']
-	price.vbar.x = source.data['Date'][inc]
-	price.vbar.bottom = source.data['Open'][inc]
-	price.vbar.top = source.data['Close'][inc]
-	price.vbar.x = source.data['Date'][dec]
-	price.vbar.bottom = source.data['Open'][dec]
-	price.vbar.top = source.data['Close'][dec]
+	risk.extra_y_ranges['Price'] = Range1d(start=df['Close'].min(), end=df['Close'].max())
+	# inc = source.data['Close'] >= source.data['Open']
+	# dec = source.data['Close'] < source.data['Open']
+	# price.vbar.x = source.data['Date'][inc]
+	# price.vbar.bottom = source.data['Open'][inc]
+	# price.vbar.top = source.data['Close'][inc]
+	# price.vbar.x = source.data['Date'][dec]
+	# price.vbar.bottom = source.data['Open'][dec]
+	# price.vbar.top = source.data['Close'][dec]
 	
 	
 intro.on_change('value', select_crypto)
