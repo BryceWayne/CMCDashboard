@@ -13,6 +13,7 @@ import pandas as pd
 import requests
 import matplotlib.pyplot as plt
 import datetime
+import lxml
 from sklearn import preprocessing
 from pprint import pprint
 
