@@ -17,5 +17,5 @@ EXPOSE 8080
 CMD bokeh serve --port 8080 \
     --allow-websocket-origin="*" \
     --num-procs=${NUM_PROCS} \
-    --index=/index.html \
+#     --index=/index.html \
     CMCDashboard/dashboard.py
