@@ -10,6 +10,7 @@ RUN apt-get install git bash
 RUN git clone https://github.com/BryceWayne/CMCDashboard.git
 RUN cd CMCDashboard
 RUN conda install --yes --quiet python=${PY_VERSION} pyyaml jinja2 bokeh=${BK_VERSION} numpy "nodejs>=8.8" pandas requests scikit-learn matplotlib lxml
+RUN pip3 install lxml
 RUN conda clean -ay
 
 EXPOSE 8080
