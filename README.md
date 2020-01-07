@@ -1,4 +1,4 @@
 # CMCDashboard
 
 ## Website
-https://cmcdashboard.herokuapp.com/dashboard
+https://cmcdashboard.appspot.com
