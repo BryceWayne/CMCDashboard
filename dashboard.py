@@ -181,7 +181,7 @@ risk.y_range = Range1d(start=0, end=1)
 
 risk.extra_y_ranges['Price'] = Range1d(start=source.data['Scaled'].min(), end=source.data['Scaled'].max())
 risk.add_layout(LinearAxis(y_range_name="Price", axis_label='Price ($)'), 'right')
-risk.line(x='Date', y='Close', source=source, y_range_name='Price', line_width=1/PHI, color='blue', legend_label='Price')
+risk.line(x='Date', y='Scaled', source=source, y_range_name='Price', line_width=1/PHI, color='blue', legend_label='Price')
 
 """
 Setting up widgets
