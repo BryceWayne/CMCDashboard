@@ -179,7 +179,7 @@ risk.grid.grid_line_alpha=0.3
 risk.line(x='Date', y="Risk", line_width=1, line_alpha=1, source=source, line_color='black', legend_label='Risk')
 risk.y_range = Range1d(start=0, end=1)
 
-risk.extra_y_ranges['Price'] = Range1d(start=source.data['Close'].min(), end=source.data['Close'].max())
+risk.extra_y_ranges['Price'] = Range1d(start=source.data['Scaled'].min(), end=source.data['Scaled'].max())
 risk.add_layout(LinearAxis(y_range_name="Price", axis_label='Price ($)'), 'right')
 risk.line(x='Date', y='Close', source=source, y_range_name='Price', line_width=1/PHI, color='blue', legend_label='Price')
 
@@ -205,7 +205,7 @@ def select_crypto(attr, old, new):
 	rsi_plot.y_range.end = max(source.data['RSI'])
 	risk.title.text = str(intro.value) + ' Risk'
 	price_hover = price.select(dict(type=HoverTool))
-	risk.extra_y_ranges['Price'] = Range1d(start=df['Close'].min(), end=df['Close'].max())
+	risk.extra_y_ranges['Price'] = Range1d(start=df['Scaled'].min(), end=df['Scaled'].max())
 	# inc = source.data['Close'] >= source.data['Open']
 	# dec = source.data['Close'] < source.data['Open']
 	# price.vbar.x = source.data['Date'][inc]
