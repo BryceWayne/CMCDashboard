@@ -8,7 +8,7 @@ ENV BOKEH_RESOURCES=cdn
 RUN apt-get install git bash
 RUN git clone https://github.com/man-c/pycoingecko.git
 RUN cd pycoingecko
-RUN python3 setup.py install
+RUN python setup.py install
 RUN cd..
 RUN git clone https://github.com/BryceWayne/CMCDashboard.git
 RUN cd CMCDashboard
