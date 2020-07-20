@@ -12,7 +12,6 @@ RUN cd CMCDashboard
 RUN conda install --yes --quiet python=${PY_VERSION} pyyaml jinja2 bokeh=${BK_VERSION} numpy "nodejs>=8.8" pandas requests scikit-learn matplotlib lxml
 RUN conda install -c anaconda lxml
 RUN conda clean -ay
-RUN pip install -r requirements.txt
 EXPOSE 8080
 
 CMD python database.py
