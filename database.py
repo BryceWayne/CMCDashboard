@@ -20,7 +20,8 @@ class database:
 			with open(f'{path}/{self.name}.pkl', 'wb') as f:
 				pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
 			print('Data created')
-			data['History'] = {}
+			data['History'] = []
+			data['get_coins_markets'] = []
 		self.data = data
 	def save(self):
 		cwd = os.getcwd()
@@ -29,55 +30,33 @@ class database:
 			pickle.dump(self.data, f, pickle.HIGHEST_PROTOCOL)
 		print("Data saved\n")
 	def update(self, timestamp, data):
-		date = timestamp.date()
-		timestamp = str(timestamp.time()).split('.')[0]
-		timestamp = timestamp.split(':')[0] + ':' + timestamp.split(':')[1]
-		if date in self.data.keys():
-			if timestamp in self.data[date].keys():
-				# print("Data exists")
-				pass
-			else:
-				self.data[date][timestamp] = data
-				# print('New timestamp inserted into database')
-		elif date not in self.data.keys():
-			self.data[date] = {timestamp: data}
-			# print("New date inserted into database")
-		# pprint(self.data[date].keys())
+		entry = {'timestamp':timestamp, 'data':data}
+		self.data['get_coins_markets'].append(entry)
+		# print("New entry inserted into database")
 	def history(self, timestamp, data):
-		date = timestamp.date()
-		timestamp = str(timestamp.time()).split('.')[0]
-		timestamp = timestamp.split(':')[0] + ':' + timestamp.split(':')[1] 
-		# print("Date:", date, " Time:", timestamp)
-		candles = {}
+		candle = {'timestamp':timestamp}
 		for datum in data:
-			candle = {'Name':datum['name'],
-					  'Price':datum['current_price'],
-					  'Rank': datum['market_cap_rank'],
-					  'Circulating Supply': datum['circulating_supply'],
-					  'Total Supply': datum['total_supply'],
-					  'Total Volume': datum['total_volume'],
-					  'Market Cap':datum['market_cap']}
-			candles[datum['symbol'].upper()] = candle
-		try:
-			self.data['History'][date][timestamp] = candles
-			# print('Inserted new history candles.')
-		except:
-			self.data['History'][date] = {timestamp:candles}
-			# print('Created new history date data')
-		# pprint(self.data['History'][date])
+			candle[datum['symbol'].upper()] = datum['current_price']
+		self.data['History'].append(candle)
+		
 
 if __name__ == '__main__':
+	print("Check.")
 	from pycoingecko import CoinGeckoAPI
 	from datetime import datetime
 	import time
 	cg = CoinGeckoAPI()
 	db = database('test')
 	while True:
-		print(cg.ping())
-		if cg.ping() is not None:
+		now = datetime.now()
+		now = str(now).split('.')[0]
+		try:
+			print("Timestamp:", now, cg.ping())
 			coins_list = cg.get_coins_markets(vs_currency='usd')
-			now = datetime.now()
 			db.update(now, coins_list)
 			db.history(now, coins_list)
 			db.save()
+		except:
+			print("Timestamp:", now, "!!!!!!!!!!!Error!!!!!!!!!!")
+			pass
 		time.sleep(60)
