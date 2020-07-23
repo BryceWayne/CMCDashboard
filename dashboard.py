@@ -12,9 +12,10 @@ from pycoingecko import CoinGeckoAPI
 # app = Flask(__name__)
 
 from bokeh.io import curdoc
+from bokeh.plotting import figure
 from bokeh.layouts import column, row
-from bokeh.models import Select, ColumnDataSource, TableColumn, DataTable
-from bokeh.models.widgets import Tabs, PreText, Panel
+from bokeh.models import Select, ColumnDataSource, TableColumn, DataTable, ImageURL
+from bokeh.models.widgets import Tabs, PreText, Panel, Div
 
 # stats = PreText(text='', width=500)
 cg = CoinGeckoAPI()
@@ -81,6 +82,14 @@ df.sort_values('market_cap_rank')
 df['symbol'] = df['symbol'].str.upper()
 source = ColumnDataSource(data=df)
 data_table = DataTable(source=source, columns=columns, width=800, height=800, index_position=None, fit_columns=True)
+TICKER = 'BTC'
+x_range = (0,100) # could be anything - e.g.(0,1)
+y_range = (0,100)
+p = figure(x_range=x_range, y_range=y_range)
+#img_path = 'https://docs.bokeh.org/en/latest/_static/images/logo.png'
+img_path = f'C:/Users/Alien/Coding/CMCDashboard/data/pics/{TICKER}.png'
+p = figure(x_range=(0,1), y_range=(0,1))
+p.image_url(url=[img_path], x=0, y=1, w=0.8, h=0.6)
 """
 Set up callbacks
 """
@@ -102,7 +111,7 @@ def select_crypto(attr, old, new):
 
 
 intro.on_change('value', select_crypto)
-INTRO = row(intro, data_table)
+INTRO = column(row(intro, data_table), p)
 INTRO = Panel(child=INTRO, title="Market Info")
 tabs = Tabs(tabs=[INTRO])
 curdoc().title = "Coin Dashboard"
